@@ -69,6 +69,17 @@
   .bar-fill.warn{ background: var(--yellow); }
   .bar-fill.over{ background: var(--red); }
 
+  .alert-banner{
+    display:none;
+    align-items:center; gap:10px;
+    padding:14px 16px; border-radius:14px; margin-bottom:16px;
+    font-size:14px; font-weight:600;
+  }
+  .alert-banner.show{ display:flex; }
+  .alert-banner.warn{ background: rgba(232,185,74,0.18); border:1px solid var(--yellow); color: var(--yellow); }
+  .alert-banner.over{ background: rgba(224,101,75,0.18); border:1px solid var(--red); color: #F4A896; }
+  .alert-banner .ic{ font-size:20px; }
+
   .row-cards{ display:flex; gap:12px; margin-bottom:16px; }
   .mini-card{
     flex:1; background: var(--card); border:1px solid var(--border);
@@ -158,6 +169,11 @@
   </div>
   <div class="gear" id="settingsBtn">⚙</div>
 </header>
+
+<div class="alert-banner" id="alertBanner">
+  <span class="ic" id="alertIcon">⚠️</span>
+  <span id="alertText"></span>
+</div>
 
 <div class="budget-card">
   <div class="budget-label">ເຫຼືອໃຊ້ຈ່າຍມື້ນີ້</div>
@@ -285,6 +301,22 @@ async function loadSummary(){
   const fill = $('barFill');
   fill.style.width = pct + '%';
   fill.className = 'bar-fill' + (s.percentUsed > 100 ? ' over' : s.percentUsed >= 80 ? ' warn' : '');
+
+  const banner = $('alertBanner');
+  if(s.percentUsed > 100){
+    banner.className = 'alert-banner show over';
+    $('alertIcon').textContent = '⚠️';
+    $('alertText').textContent = 'ໃຊ້ຈ່າຍເກີນງົບແລ້ວ ' + fmt(s.todaySpent - s.dailyBudget) + ' ກີບ';
+    document.title = '⚠️ ເກີນງົບ! ງົບປະຈຳວັນ';
+  } else if(s.percentUsed >= 80){
+    banner.className = 'alert-banner show warn';
+    $('alertIcon').textContent = '🟡';
+    $('alertText').textContent = 'ໃຊ້ໄປແລ້ວ ' + s.percentUsed + '% ຂອງງົບມື້ນີ້ ລະວັງໄວ້ເດີ້';
+    document.title = 'ງົບປະຈຳວັນ';
+  } else {
+    banner.className = 'alert-banner';
+    document.title = 'ງົບປະຈຳວັນ';
+  }
 
   // history list
   const list = $('historyList');
